@@ -24,31 +24,39 @@ const EX_COLORS: Record<string, string> = {
   tree_pose: "from-rose-500 to-pink-400", chair_pose: "from-rose-500 to-pink-400", triangle_pose: "from-rose-500 to-pink-400",
 };
 
-const YOGA_EXERCISES = new Set(["mountain_pose","warrior_i","warrior_ii","tree_pose","chair_pose","triangle_pose"]);
+const YOGA_EXERCISES = new Set(["mountain_pose", "warrior_i", "warrior_ii", "tree_pose", "chair_pose", "triangle_pose"]);
 
 const CATEGORIES = [
-  { id: "strength", label: "Strength", icon: "💪", color: "from-blue-600 to-indigo-500", exercises: [
-    { id: "squats", label: "Squats" },
-    { id: "bicep_curls", label: "Bicep Curls" },
-    { id: "pushups", label: "Push-ups" },
-  ]},
-  { id: "neck", label: "Neck", icon: "🔄", color: "from-amber-500 to-orange-400", exercises: [
-    { id: "neck_rotation", label: "Neck Rotation" },
-    { id: "neck_tilt", label: "Neck Tilt" },
-  ]},
-  { id: "shoulder", label: "Shoulder", icon: "🦾", color: "from-violet-500 to-purple-400", exercises: [
-    { id: "shoulder_rolls", label: "Shoulder Rolls" },
-    { id: "shoulder_press", label: "Shoulder Press" },
-    { id: "lateral_raises", label: "Lateral Raises" },
-  ]},
-  { id: "yoga", label: "Yoga", icon: "🧘", color: "from-rose-500 to-pink-400", exercises: [
-    { id: "mountain_pose", label: "Tadasana" },
-    { id: "warrior_i", label: "Warrior I" },
-    { id: "warrior_ii", label: "Warrior II" },
-    { id: "tree_pose", label: "Tree Pose" },
-    { id: "chair_pose", label: "Chair Pose" },
-    { id: "triangle_pose", label: "Triangle Pose" },
-  ]},
+  {
+    id: "strength", label: "Strength", icon: "💪", color: "from-blue-600 to-indigo-500", exercises: [
+      { id: "squats", label: "Squats" },
+      { id: "bicep_curls", label: "Bicep Curls" },
+      { id: "pushups", label: "Push-ups" },
+    ]
+  },
+  {
+    id: "neck", label: "Neck", icon: "🔄", color: "from-amber-500 to-orange-400", exercises: [
+      { id: "neck_rotation", label: "Neck Rotation" },
+      { id: "neck_tilt", label: "Neck Tilt" },
+    ]
+  },
+  {
+    id: "shoulder", label: "Shoulder", icon: "🦾", color: "from-violet-500 to-purple-400", exercises: [
+      { id: "shoulder_rolls", label: "Shoulder Rolls" },
+      { id: "shoulder_press", label: "Shoulder Press" },
+      { id: "lateral_raises", label: "Lateral Raises" },
+    ]
+  },
+  {
+    id: "yoga", label: "Yoga", icon: "🧘", color: "from-rose-500 to-pink-400", exercises: [
+      { id: "mountain_pose", label: "Tadasana" },
+      { id: "warrior_i", label: "Warrior I" },
+      { id: "warrior_ii", label: "Warrior II" },
+      { id: "tree_pose", label: "Tree Pose" },
+      { id: "chair_pose", label: "Chair Pose" },
+      { id: "triangle_pose", label: "Triangle Pose" },
+    ]
+  },
 ];
 
 const EX_ICONS: Record<string, string> = {
@@ -60,20 +68,20 @@ const EX_ICONS: Record<string, string> = {
 };
 
 const EX_GUIDES: Record<string, string[]> = {
-  squats: ["Stand with feet shoulder-width apart","Keep chest up, back straight throughout","Lower until knees reach ~90° angle","Drive through heels to stand back up","Keep knees in line with toes — no caving in"],
-  bicep_curls: ["Stand straight, arms fully extended at sides","Keep elbows fixed — do not let them drift forward","Curl weights up until angle is ~45°","Lower slowly — don't just drop your arms","Use a controlled medium speed (2s up, 2s down)"],
-  pushups: ["Start in a high plank — body in a straight line","Hands slightly wider than shoulder-width","Lower chest to the floor — elbows ~45° from body","Push back up until arms are fully extended","Keep hips level — do not sag or pike"],
-  neck_rotation: ["Stand or sit tall with shoulders relaxed","Slowly turn head to the LEFT — hold 1s","Return to centre, then rotate RIGHT — hold 1s","Keep shoulders completely still throughout","Medium speed only — never jerk or rush"],
-  neck_tilt: ["Sit or stand tall, face forward","Slowly tilt right ear toward right shoulder","Return to centre, then tilt left ear to left shoulder","Keep both shoulders level and relaxed","Do NOT rotate your head — only tilt sideways"],
-  shoulder_rolls: ["Stand tall with arms relaxed at sides","Roll both shoulders UP toward ears","Then roll them BACK and DOWN in a circle","Keep your neck relaxed throughout","Slow, controlled circles for full range"],
-  shoulder_press: ["Stand with feet shoulder-width apart","Hold weights at shoulder height, elbows at ~90°","Press arms straight overhead until locked out","Lower slowly back to shoulder height","Keep core tight — no arching your lower back"],
-  lateral_raises: ["Stand with arms at sides, slight elbow bend","Raise both arms out to sides simultaneously","Stop when wrists are at shoulder height (T-shape)","Lower slowly — don't let arms drop","No shrugging — keep shoulders down and level"],
-  mountain_pose: ["Stand with feet together, weight evenly distributed","Arms hang naturally at sides, palms forward","Lengthen spine — imagine a string pulling your crown up","Relax shoulders down and back","Breathe deeply and hold for 30 seconds"],
-  warrior_i: ["Step one foot forward into a wide lunge","Bend front knee to ~90° — knee over ankle","Back leg stays straight and strong","Raise both arms overhead, palms together","Square hips forward and hold for 30 seconds"],
-  warrior_ii: ["Step feet wide apart — about 3-4 feet","Turn front foot 90°, back foot slightly in","Bend front knee to 90° over ankle","Extend arms out to sides at shoulder height","Gaze over front fingertips and hold for 30 seconds"],
-  tree_pose: ["Stand on one leg, find your balance point","Place other foot on inner calf or inner thigh (not knee)","Bring hands to prayer at chest, or raise overhead","Keep standing hip level — engage your core","Fix your gaze on a still point and hold for 30 seconds"],
-  chair_pose: ["Stand with feet hip-width apart","Bend knees and lower as if sitting in a chair","Aim for thighs parallel to the floor (~100°)","Raise arms overhead, parallel or palms together","Keep chest lifted, spine long — hold for 30 seconds"],
-  triangle_pose: ["Stand with feet wide apart (3-4 feet)","Turn front foot out 90°, back foot slightly in","Keep both legs straight and strong","Reach front hand down toward ankle/shin/floor","Extend top arm straight up — gaze up to top hand, hold 30s"],
+  squats: ["Stand with feet shoulder-width apart", "Keep chest up, back straight throughout", "Lower until knees reach ~90° angle", "Drive through heels to stand back up", "Keep knees in line with toes — no caving in"],
+  bicep_curls: ["Stand straight, arms fully extended at sides", "Keep elbows fixed — do not let them drift forward", "Curl weights up until angle is ~45°", "Lower slowly — don't just drop your arms", "Use a controlled medium speed (2s up, 2s down)"],
+  pushups: ["Start in a high plank — body in a straight line", "Hands slightly wider than shoulder-width", "Lower chest to the floor — elbows ~45° from body", "Push back up until arms are fully extended", "Keep hips level — do not sag or pike"],
+  neck_rotation: ["Stand or sit tall with shoulders relaxed", "Slowly turn head to the LEFT — hold 1s", "Return to centre, then rotate RIGHT — hold 1s", "Keep shoulders completely still throughout", "Medium speed only — never jerk or rush"],
+  neck_tilt: ["Sit or stand tall, face forward", "Slowly tilt right ear toward right shoulder", "Return to centre, then tilt left ear to left shoulder", "Keep both shoulders level and relaxed", "Do NOT rotate your head — only tilt sideways"],
+  shoulder_rolls: ["Stand tall with arms relaxed at sides", "Roll both shoulders UP toward ears", "Then roll them BACK and DOWN in a circle", "Keep your neck relaxed throughout", "Slow, controlled circles for full range"],
+  shoulder_press: ["Stand with feet shoulder-width apart", "Hold weights at shoulder height, elbows at ~90°", "Press arms straight overhead until locked out", "Lower slowly back to shoulder height", "Keep core tight — no arching your lower back"],
+  lateral_raises: ["Stand with arms at sides, slight elbow bend", "Raise both arms out to sides simultaneously", "Stop when wrists are at shoulder height (T-shape)", "Lower slowly — don't let arms drop", "No shrugging — keep shoulders down and level"],
+  mountain_pose: ["Stand with feet together, weight evenly distributed", "Arms hang naturally at sides, palms forward", "Lengthen spine — imagine a string pulling your crown up", "Relax shoulders down and back", "Breathe deeply and hold for 30 seconds"],
+  warrior_i: ["Step one foot forward into a wide lunge", "Bend front knee to ~90° — knee over ankle", "Back leg stays straight and strong", "Raise both arms overhead, palms together", "Square hips forward and hold for 30 seconds"],
+  warrior_ii: ["Step feet wide apart — about 3-4 feet", "Turn front foot 90°, back foot slightly in", "Bend front knee to 90° over ankle", "Extend arms out to sides at shoulder height", "Gaze over front fingertips and hold for 30 seconds"],
+  tree_pose: ["Stand on one leg, find your balance point", "Place other foot on inner calf or inner thigh (not knee)", "Bring hands to prayer at chest, or raise overhead", "Keep standing hip level — engage your core", "Fix your gaze on a still point and hold for 30 seconds"],
+  chair_pose: ["Stand with feet hip-width apart", "Bend knees and lower as if sitting in a chair", "Aim for thighs parallel to the floor (~100°)", "Raise arms overhead, parallel or palms together", "Keep chest lifted, spine long — hold for 30 seconds"],
+  triangle_pose: ["Stand with feet wide apart (3-4 feet)", "Turn front foot out 90°, back foot slightly in", "Keep both legs straight and strong", "Reach front hand down toward ankle/shin/floor", "Extend top arm straight up — gaze up to top hand, hold 30s"],
 };
 
 const tips = [
@@ -99,14 +107,14 @@ function playAlarm() {
     gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
     osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-  } catch (e) {}
+  } catch (e) { }
 }
 
 import { useExerciseTracker } from "@/hooks/useExerciseTracker";
 
 export default function ExerciseTracker() {
   const [activeCat, setActiveCat] = useState("strength");
-  
+
   const {
     videoRef,
     canvasRef,
@@ -122,11 +130,10 @@ export default function ExerciseTracker() {
     setCurrentEx
   } = useExerciseTracker();
 
-  // Local state for UI that derives from stats
   const [repCount, setRepCount] = useState(0);
   const [formScore, setFormScore] = useState(100);
   const [feedback, setFeedback] = useState("Select an exercise and click Start");
-  const [stateBadge, setStateBadge] = useState<"ready"|"tracking"|"yoga"|"stopped">("ready");
+  const [stateBadge, setStateBadge] = useState<"ready" | "tracking" | "yoga" | "stopped">("ready");
   const [angle, setAngle] = useState("—");
   const [speed, setSpeed] = useState("—");
   const [speedColor, setSpeedColor] = useState("text-muted-foreground");
@@ -146,14 +153,12 @@ export default function ExerciseTracker() {
   const guides = EX_GUIDES[currentEx] || [];
   const isYogaEx = YOGA_EXERCISES.has(currentEx);
 
-  // Sync stats from hook to local state
   useEffect(() => {
     if (!tracking) return;
     updateUI(stats);
   }, [stats, tracking]);
-    
+
   useEffect(() => {
-    // Global ESC key listener to end full screen
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && tracking) {
         handleStopEx();
@@ -168,18 +173,17 @@ export default function ExerciseTracker() {
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
 
-    return () => { 
+    return () => {
       window.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
   }, [cameraOn, tracking]);
 
-  // Dedicated unmount cleanup to avoid race conditions with cameraOn state
   useEffect(() => {
     return () => {
       stopCamera();
       if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
+        document.exitFullscreen().catch(() => { });
       }
     };
   }, [stopCamera]);
@@ -234,8 +238,8 @@ export default function ExerciseTracker() {
       setCamBtnDisabled(false);
       setCamBtnText("Start Camera");
     } catch (e: any) {
-      alert("Camera error. Please allow camera permissions."); 
-      setCamBtnDisabled(false); 
+      alert("Camera error. Please allow camera permissions.");
+      setCamBtnDisabled(false);
       setCamBtnText("Start Camera");
     }
   }
@@ -243,13 +247,12 @@ export default function ExerciseTracker() {
   async function handleStartEx() {
     startExercise(currentEx);
     setStateBadge(isYogaEx ? "yoga" : "tracking");
-    document.documentElement.requestFullscreen?.().catch(() => {});
+    document.documentElement.requestFullscreen?.().catch(() => { });
   }
 
   async function handleStopEx() {
     stopExercise();
 
-    // 💾 Save exercise session to Neon
     const savedUser = localStorage.getItem("prism_user");
     if (savedUser) {
       const u = JSON.parse(savedUser);
@@ -265,15 +268,15 @@ export default function ExerciseTracker() {
             duration: holdElapsed > 0 ? Math.round(holdElapsed) : repCount * 3
           })
         })
-        .then(r => r.json())
-        .then(() => console.log("✅ Exercise session saved to Neon"))
-        .catch(err => console.error("Exercise save failed:", err));
+          .then(r => r.json())
+          .then(() => console.log("✅ Exercise session saved to Neon"))
+          .catch(err => console.error("Exercise save failed:", err));
       }
     }
 
     setStateBadge("stopped");
     if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
+      document.exitFullscreen().catch(() => { });
     }
     await handleStopCam();
   }
@@ -293,7 +296,25 @@ export default function ExerciseTracker() {
 
   return (
     <div className={`space-y-6 pb-12 transition-colors duration-300 ${alarmActive ? "bg-red-950/20" : ""}`}>
-      
+
+      {/* ✅ Video element always in DOM, just invisible — required for MediaPipe to work */}
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: 1,
+          height: 1,
+          opacity: 0,
+          pointerEvents: "none",
+          zIndex: -1,
+        }}
+      />
+
       {/* 1. Header Hero Panel */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#4c1d95] rounded-3xl p-6 text-white shadow-xl border border-white/10 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.15),transparent_50%)]" />
@@ -346,30 +367,30 @@ export default function ExerciseTracker() {
 
       {/* Launch Zone */}
       <div className="flex justify-center bg-card/60 backdrop-blur-xl p-6 rounded-3xl border border-border/60 shadow-xl mt-8">
-         {!cameraOn ? (
-            <Button size="lg" disabled={camBtnDisabled} className="bg-primary hover:bg-primary/90 text-white font-black rounded-2xl px-12 h-16 text-lg flex items-center gap-2 shadow-2xl shadow-primary/30" onClick={handleStartCam}> <Camera className="w-6 h-6" /> Start Session </Button>
-         ) : (
-            <div className="flex items-center gap-4">
-               <Button size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl px-12 h-16 text-lg flex items-center gap-2 shadow-2xl shadow-emerald-500/30" onClick={handleStartEx}> <Play className="w-5 h-5 fill-white" /> Start Exercise </Button>
-               <Button size="icon" variant="outline" className="rounded-2xl w-16 h-16 border-2" onClick={handleStopCam}> <CameraOff className="w-6 h-6" /> </Button>
-            </div>
-         )}
+        {!cameraOn ? (
+          <Button size="lg" disabled={camBtnDisabled} className="bg-primary hover:bg-primary/90 text-white font-black rounded-2xl px-12 h-16 text-lg flex items-center gap-2 shadow-2xl shadow-primary/30" onClick={handleStartCam}> <Camera className="w-6 h-6" /> Start Session </Button>
+        ) : (
+          <div className="flex items-center gap-4">
+            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl px-12 h-16 text-lg flex items-center gap-2 shadow-2xl shadow-emerald-500/30" onClick={handleStartEx}> <Play className="w-5 h-5 fill-white" /> Start Exercise </Button>
+            <Button size="icon" variant="outline" className="rounded-2xl w-16 h-16 border-2" onClick={handleStopCam}> <CameraOff className="w-6 h-6" /> </Button>
+          </div>
+        )}
       </div>
 
-      {/* ── FOCUS MODAL OVERLAY (PORTAL TO BODY TO OVERRIDE ALL) ─────── */}
+      {/* ── FOCUS MODAL OVERLAY ─────────────────────────────────────────── */}
       {typeof document !== "undefined" && createPortal(
         <AnimatePresence>
           {tracking && (
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[100000] bg-[#0b1120] p-0 m-0 w-screen h-screen overflow-hidden flex flex-col lg:flex-row items-stretch"
             >
               {/* Top Close Button */}
-              <motion.button 
-                initial={{ y: -20, opacity: 0 }} 
-                animate={{ y: 0, opacity: 1 }} 
+              <motion.button
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
                 onClick={handleStopEx}
                 className="absolute top-8 right-8 p-4 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white rounded-full border border-white/10 transition-all z-[101]"
                 title="Close (Esc)"
@@ -377,16 +398,16 @@ export default function ExerciseTracker() {
                 <X className="w-6 h-6" />
               </motion.button>
 
-              {/* Main Video View (Force Fill) */}
+              {/* Main Video View */}
               <div className="relative flex-1 bg-black overflow-hidden h-full flex items-center justify-center">
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className={`relative w-full h-full ${alarmActive ? "ring-inset ring-8 ring-red-500" : ""}`}
                 >
-                  <video ref={videoRef} className="hidden" playsInline muted autoPlay />
+                  {/* ✅ Canvas shows the mirrored video feed with pose overlay */}
                   <canvas ref={canvasRef} className="w-full h-full object-cover" />
-                  
+
                   {/* HUD Overlay Labels */}
                   <div className="absolute top-10 left-10 flex items-center gap-2 bg-black/40 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -402,57 +423,57 @@ export default function ExerciseTracker() {
               </div>
 
               {/* Analysis Sidebar */}
-              <motion.div 
+              <motion.div
                 initial={{ x: 100, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 className="w-full lg:w-[480px] h-full bg-[#0f172a] border-l border-white/5 p-16 flex flex-col gap-12 shadow-3xl z-20 overflow-y-auto premium-scrollbar"
               >
-                  <div className="text-center space-y-2">
-                    <h2 className="text-lg font-black text-white tracking-widest uppercase">Analysis</h2>
-                    <div className="flex items-center justify-center gap-2 text-primary">
-                      <Activity className="w-4 h-4" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em]">{EX_LABELS[currentEx]}</span>
+                <div className="text-center space-y-2">
+                  <h2 className="text-lg font-black text-white tracking-widest uppercase">Analysis</h2>
+                  <div className="flex items-center justify-center gap-2 text-primary">
+                    <Activity className="w-4 h-4" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">{EX_LABELS[currentEx]}</span>
+                  </div>
+                </div>
+
+                <div className="flex-1 flex flex-col gap-10">
+                  {/* Reps/Timer Hero */}
+                  {!isYogaEx ? (
+                    <div className="text-center py-6 bg-white/5 rounded-[40px] border border-white/5 shadow-inner">
+                      <h3 className="text-9xl font-black text-white tracking-tighter">{repCount}</h3>
+                      <p className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] mt-2">Current Reps</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center py-6 bg-white/5 rounded-[40px] border border-white/5 shadow-inner">
+                      <div className="text-5xl font-black text-white">{Math.floor(holdElapsed)}s</div>
+                      <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mt-1">Hold Time</p>
+                    </div>
+                  )}
+
+                  {/* Info List Items */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-5 bg-white/5 rounded-3xl border border-white/5">
+                      <span className="text-[11px] font-black text-white/40 uppercase tracking-widest">Form Accuracy</span>
+                      <span className={`text-sm font-black ${formScore > 75 ? 'text-emerald-400' : 'text-amber-400'}`}>{formScore}%</span>
+                    </div>
+                    <div className="flex items-center justify-between p-5 bg-white/5 rounded-3xl border border-white/5">
+                      <span className="text-[11px] font-black text-white/40 uppercase tracking-widest">Movement Speed</span>
+                      <span className={`text-sm font-black ${speedColor}`}>{speed}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-5 bg-white/5 rounded-3xl border border-white/5">
+                      <span className="text-[11px] font-black text-white/40 uppercase tracking-widest">Current Angle</span>
+                      <span className="text-sm font-black text-white">{angle}</span>
                     </div>
                   </div>
+                </div>
 
-                  <div className="flex-1 flex flex-col gap-10">
-                    {/* Reps/Timer Hero */}
-                    {!isYogaEx ? (
-                      <div className="text-center py-6 bg-white/5 rounded-[40px] border border-white/5 shadow-inner">
-                        <h3 className="text-9xl font-black text-white tracking-tighter">{repCount}</h3>
-                        <p className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] mt-2">Current Reps</p>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center py-6 bg-white/5 rounded-[40px] border border-white/5 shadow-inner">
-                        <div className="text-5xl font-black text-white">{Math.floor(holdElapsed)}s</div>
-                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mt-1">Hold Time</p>
-                      </div>
-                    )}
-
-                    {/* Info List Items */}
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-5 bg-white/5 rounded-3xl border border-white/5">
-                        <span className="text-[11px] font-black text-white/40 uppercase tracking-widest">Form Accuracy</span>
-                        <span className={`text-sm font-black ${formScore > 75 ? 'text-emerald-400' : 'text-amber-400'}`}>{formScore}%</span>
-                      </div>
-                      <div className="flex items-center justify-between p-5 bg-white/5 rounded-3xl border border-white/5">
-                        <span className="text-[11px] font-black text-white/40 uppercase tracking-widest">Movement Speed</span>
-                        <span className={`text-sm font-black ${speedColor}`}>{speed}</span>
-                      </div>
-                      <div className="flex items-center justify-between p-5 bg-white/5 rounded-3xl border border-white/5">
-                        <span className="text-[11px] font-black text-white/40 uppercase tracking-widest">Current Angle</span>
-                        <span className="text-sm font-black text-white">{angle}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Live Feedback Bar */}
-                  <motion.div 
-                    animate={{ backgroundColor: alarmActive ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.05)" }}
-                    className="p-6 rounded-3xl border border-white/5 text-center mt-auto"
-                  >
-                    <p className="text-[13px] font-bold text-white/90 leading-relaxed italic">"{feedback}"</p>
-                  </motion.div>
+                {/* Live Feedback Bar */}
+                <motion.div
+                  animate={{ backgroundColor: alarmActive ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.05)" }}
+                  className="p-6 rounded-3xl border border-white/5 text-center mt-auto"
+                >
+                  <p className="text-[13px] font-bold text-white/90 leading-relaxed italic">"{feedback}"</p>
+                </motion.div>
               </motion.div>
             </motion.div>
           )}

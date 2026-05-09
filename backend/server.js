@@ -16,7 +16,9 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: ['https://prism-mu-five.vercel.app', 'http://localhost:5173', 'http://localhost:8080'],
+  origin: function (origin, callback) {
+    callback(null, true);
+  },
   credentials: true
 }));
 app.use(express.json());

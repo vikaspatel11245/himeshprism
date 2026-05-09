@@ -102,13 +102,27 @@ function playAlarm() {
   } catch (e) {}
 }
 
+import { useExerciseTracker } from "@/hooks/useExerciseTracker";
+
 export default function ExerciseTracker() {
   const [activeCat, setActiveCat] = useState("strength");
-  const [currentEx, setCurrentEx] = useState("squats");
-  const [cameraOn, setCameraOn] = useState(false);
-  const [tracking, setTracking] = useState(false);
+  
+  const {
+    videoRef,
+    canvasRef,
+    cameraOn,
+    tracking,
+    currentEx,
+    stats,
+    startCamera,
+    stopCamera,
+    startExercise,
+    stopExercise,
+    resetExercise,
+    setCurrentEx
+  } = useExerciseTracker();
 
-  // Stats
+  // Local state for UI that derives from stats
   const [repCount, setRepCount] = useState(0);
   const [formScore, setFormScore] = useState(100);
   const [feedback, setFeedback] = useState("Select an exercise and click Start");
@@ -125,17 +139,18 @@ export default function ExerciseTracker() {
   const [yogaSets, setYogaSets] = useState(0);
   const [alarmActive, setAlarmActive] = useState(false);
 
-  const pollRef = useRef<ReturnType<typeof setInterval>>();
   const lastAlarmRef = useRef(0);
   const [camBtnText, setCamBtnText] = useState("Start Camera");
   const [camBtnDisabled, setCamBtnDisabled] = useState(false);
-  const [videoKey, setVideoKey] = useState(0);
 
   const guides = EX_GUIDES[currentEx] || [];
   const isYogaEx = YOGA_EXERCISES.has(currentEx);
 
+  // Sync stats from hook to local state
   useEffect(() => {
-    if (cameraOn) startPolling();
+    if (!tracking) return;
+    updateUI(stats);
+  }, [stats, tracking]);
     
     // Global ESC key listener to end full screen
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -153,7 +168,6 @@ export default function ExerciseTracker() {
     document.addEventListener("fullscreenchange", handleFullscreenChange);
 
     return () => { 
-      if (pollRef.current) clearInterval(pollRef.current); 
       window.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
@@ -162,26 +176,15 @@ export default function ExerciseTracker() {
   // Dedicated unmount cleanup to avoid race conditions with cameraOn state
   useEffect(() => {
     return () => {
-      fetch("/api-exercise/stop_camera", { method: "POST" }).catch(() => {});
+      stopCamera();
       if (document.fullscreenElement) {
         document.exitFullscreen().catch(() => {});
       }
     };
-  }, []);
+  }, [stopCamera]);
 
-  function startPolling() {
-    if (pollRef.current) clearInterval(pollRef.current);
-    pollRef.current = setInterval(async () => {
-      try {
-        const r = await fetch("/api-exercise/app_state");
-        const d = await r.json();
-        updateUI(d);
-      } catch (e) {}
-    }, 200);
-  }
-
-  function updateUI(d: any) {
-    const s = d.stats || {};
+  function updateUI(s: any) {
+    if (!s) return;
     if (s.is_yoga) {
       setHoldElapsed(s.hold_elapsed || 0);
       setHoldTarget(s.hold_target || 30);
@@ -196,7 +199,6 @@ export default function ExerciseTracker() {
     } else {
       if (s.reps !== undefined) setRepCount(s.reps);
       setAngle(s.angle !== undefined ? `${s.angle}°` : "—");
-      // Show live speed from backend (starts as 'Ready', updates as user moves)
       setSpeed(s.speed_msg !== undefined ? s.speed_msg : "Ready");
       setSpeedColor(s.speed_status === "good" ? "text-emerald-400" : s.speed_status === "too_fast" ? "text-red-400" : "text-amber-400");
       setAvgTime(s.avg_rep_time > 0 ? `${s.avg_rep_time}s` : "—");
@@ -227,26 +229,24 @@ export default function ExerciseTracker() {
   async function handleStartCam() {
     setCamBtnDisabled(true); setCamBtnText("Starting...");
     try {
-      const r = await fetch("/api-exercise/start_camera", { method: "POST" });
-      const d = await r.json();
-      if (!d.ok) throw new Error(d.message);
-      setVideoKey(Date.now()); setCameraOn(true);
+      await startCamera();
+      setCamBtnDisabled(false);
+      setCamBtnText("Start Camera");
     } catch (e: any) {
-      alert("Camera error: " + e.message); setCamBtnDisabled(false); setCamBtnText("Start Camera");
+      alert("Camera error. Please allow camera permissions."); 
+      setCamBtnDisabled(false); 
+      setCamBtnText("Start Camera");
     }
   }
 
   async function handleStartEx() {
-    await fetch("/api-exercise/start_exercise", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ exercise: currentEx }) });
-    setTracking(true); setStateBadge(isYogaEx ? "yoga" : "tracking");
-    // Mirror Posture AI: Request Native Fullscreen
+    startExercise(currentEx);
+    setStateBadge(isYogaEx ? "yoga" : "tracking");
     document.documentElement.requestFullscreen?.().catch(() => {});
   }
 
   async function handleStopEx() {
-    try {
-      await fetch("/api-exercise/stop_exercise", { method: "POST" });
-    } catch (e) {}
+    stopExercise();
 
     // 💾 Save exercise session to Neon
     const savedUser = localStorage.getItem("prism_user");
@@ -270,7 +270,7 @@ export default function ExerciseTracker() {
       }
     }
 
-    setTracking(false); setStateBadge("stopped");
+    setStateBadge("stopped");
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
     }
@@ -278,14 +278,13 @@ export default function ExerciseTracker() {
   }
 
   async function handleReset() {
-    await fetch("/api-exercise/reset_exercise", { method: "POST" });
+    resetExercise();
     setRepCount(0); setHoldElapsed(0); setYogaSets(0); setFormScore(100); setFeedback("Reset — ready to go again");
   }
 
   async function handleStopCam() {
-    if (pollRef.current) clearInterval(pollRef.current);
-    await fetch("/api-exercise/stop_camera", { method: "POST" });
-    setCameraOn(false); setTracking(false); setStateBadge("ready");
+    stopCamera();
+    setStateBadge("ready");
     setCamBtnDisabled(false); setCamBtnText("Start Camera");
   }
 
@@ -384,7 +383,8 @@ export default function ExerciseTracker() {
                   animate={{ opacity: 1 }}
                   className={`relative w-full h-full ${alarmActive ? "ring-inset ring-8 ring-red-500" : ""}`}
                 >
-                  <img src={`/api-exercise/video_feed?t=${videoKey}`} alt="Live Feed" className="w-full h-full object-cover" />
+                  <video ref={videoRef} className="hidden" playsInline muted autoPlay />
+                  <canvas ref={canvasRef} className="w-full h-full object-cover" />
                   
                   {/* HUD Overlay Labels */}
                   <div className="absolute top-10 left-10 flex items-center gap-2 bg-black/40 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10">

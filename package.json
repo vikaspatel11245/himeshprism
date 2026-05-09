@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "start:all": "concurrently \"npm run dev\" \"node backend/server.js\" \"python services/posture/main.py\" \"python services/exercise/main.py\""
+    "start:all": "concurrently \"npm run dev\" \"node backend/server.js\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -58,6 +58,9 @@
     "express": "^5.2.1",
     "framer-motion": "^12.34.0",
     "groq-sdk": "^1.1.1",
+    "@mediapipe/camera_utils": "^0.3.1675466862",
+    "@mediapipe/drawing_utils": "^0.3.1675466124",
+    "@mediapipe/tasks-vision": "^0.10.14",
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
     "jspdf": "^4.2.1",

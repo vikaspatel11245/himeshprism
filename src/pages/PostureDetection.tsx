@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Camera, CameraOff, Play, AlertTriangle, CheckCircle2, Clock, BarChart2 } from "lucide-react";
@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import FuturisticVideo from "@/assets/Futuristic_Posture_Detection_Video.mp4";
 import { apiUrl } from "@/lib/api";
+import { usePostureDetector } from "@/hooks/usePostureDetector";
 
 const VIEW_INSTRUCTIONS: Record<string, string[]> = {
   FRONT: ['Stand FACING the camera', 'Arms relaxed at sides', 'Feet shoulder-width apart'],
@@ -15,22 +16,30 @@ const VIEW_INSTRUCTIONS: Record<string, string[]> = {
 };
 
 const PostureDetection = () => {
-  const [isActive, setIsActive] = useState(false);
   const [isFocusMode, setIsFocusMode] = useState(false);
-  const [backendState, setBackendState] = useState<string>("idle");
-  const [viewInfo, setViewInfo] = useState<any>(null);
-  const [completedViews, setCompletedViews] = useState<string[]>([]);
-  const [prepRem, setPrepRem] = useState(0);
-  const [capRem, setCapRem] = useState(0);
-  const [capProg, setCapProg] = useState(0);
-  const [results, setResults] = useState<any>(null);
   const [showReport, setShowReport] = useState(false);
-  const [videoUrl, setVideoUrl] = useState<string>("");
   const [reportsHistory, setReportsHistory] = useState<any[]>([]);
-  const [isPaused, setIsPaused] = useState(false);
-  const [allViewsDone, setAllViewsDone] = useState(false);
-  const pollTimerRef = useRef<ReturnType<typeof setInterval>>();
   const navigate = useNavigate();
+
+  const {
+    videoRef,
+    canvasRef,
+    isActive,
+    backendState,
+    viewInfo,
+    completedViews,
+    prepRem,
+    capRem,
+    capProg,
+    results,
+    isPaused,
+    startCamera,
+    stopCamera,
+    startAnalysis,
+    togglePause,
+    resetAnalysis,
+    allViewsDone
+  } = usePostureDetector();
 
   // 📦 Load posture history from Neon DB on mount
   useEffect(() => {
@@ -67,146 +76,58 @@ const PostureDetection = () => {
     loadHistory();
   }, []);
 
-  const startPolling = useCallback(() => {
-    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-    pollTimerRef.current = setInterval(async () => {
-      try {
-        const r = await fetch('/api-posture/app_state');
-        const d = await r.json();
-        setBackendState(d.state);
-        setViewInfo(d.view);
-        setCompletedViews(d.completed || []);
-        setPrepRem(d.prep_rem || 0);
-        setCapRem(d.cap_rem || 0);
-        setCapProg(d.cap_prog || 0);
-        setIsPaused(d.paused || false);
-        
-        if (d.results) {
-          setResults(d.results);
-        }
-
-        if (d.state === 'done') {
-          fetchResults();
-          setAllViewsDone(true);
-          if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-        }
-      } catch (e) { }
-    }, 500);
-  }, []);
-
-  const fetchResults = async () => {
-    try {
-      const r = await fetch('/api-posture/results');
-      const d = await r.json();
-      if (d.ok) {
-        setResults(d.data);
-        setReportsHistory((prev) => [{ ...d.data, timestamp: new Date().toLocaleTimeString() }, ...prev]);
-        setShowReport(true);
-
-        // 💾 Save to Neon DB
-        const savedUser = localStorage.getItem("prism_user");
-        if (savedUser) {
-          const u = JSON.parse(savedUser);
-          if (u.user_id || u.patient_id) {
-            fetch(apiUrl("/api/posture-report"), {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                userId: u.user_id,
-                patientId: u.patient_id,
-                results: d.data
-              })
+  // Save report whenever results become available
+  useEffect(() => {
+    if (results && !showReport) {
+      setReportsHistory((prev) => [{ ...results, timestamp: new Date().toLocaleTimeString() }, ...prev]);
+      setShowReport(true);
+      
+      const savedUser = localStorage.getItem("prism_user");
+      if (savedUser) {
+        const u = JSON.parse(savedUser);
+        if (u.user_id || u.patient_id) {
+          fetch(apiUrl("/api/posture-report"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: u.user_id,
+              patientId: u.patient_id,
+              results: results
             })
-            .then(r => r.json())
-            .then(res => console.log("✅ Posture report saved:", res))
-            .catch(err => console.error("Posture save failed:", err));
-          } else {
-            console.warn("⚠️ No user_id/patient_id in localStorage — log out and log back in");
-          }
+          })
+          .then(r => r.json())
+          .then(res => console.log("✅ Posture report saved:", res))
+          .catch(err => console.error("Posture save failed:", err));
         }
       }
-    } catch (e) { }
+    }
+  }, [results, showReport]);
+
+  const handleStartCamera = async () => {
+    try {
+      await startCamera();
+      setIsFocusMode(true);
+      setShowReport(false);
+      setTimeout(() => startAnalysis(), 1500);
+      document.documentElement.requestFullscreen?.().catch(() => {});
+    } catch (e) {
+      alert("Camera failure: make sure you granted permissions.");
+    }
   };
 
-  const startAnalysis = useCallback(async () => {
-    try {
-      const r = await fetch('/api-posture/start_analysis', { method: 'POST' });
-      const d = await r.json();
-      if (!d.ok) {
-        alert("Could not start analysis: " + d.message);
-      }
-    } catch (e) { }
-  }, []);
-
-  const startCamera = useCallback(async () => {
-    try {
-      const r = await fetch('/api-posture/start_camera', { method: 'POST' });
-      const d = await r.json();
-      if (d.ok) {
-        setIsActive(true);
-        setIsFocusMode(true);
-        setResults(null);
-        setShowReport(false);
-        setAllViewsDone(false);
-        setVideoUrl(`/api-posture/video_feed?t=${Date.now()}`);
-        startPolling();
-        
-        // Skip overlay and immediately trigger analysis
-        setTimeout(() => {
-          startAnalysis();
-        }, 1500);
-
-        document.documentElement.requestFullscreen?.().catch(() => {});
-      } else {
-        alert("Backend camera failure: " + d.message);
-      }
-    } catch (e) {
-      alert("Make sure the posture detection backend is running.");
-    }
-  }, [startPolling, startAnalysis]);
-
-  const stopCamera = useCallback(async () => {
-    try {
-      await fetch('/api-posture/stop_camera', { method: 'POST' });
-    } catch (e) { }
-    setIsActive(false);
+  const handleStopCamera = () => {
+    stopCamera();
     setIsFocusMode(false);
-    setBackendState("idle");
-    setVideoUrl("");
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
     }
-    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-  }, []);
+  };
 
-  const togglePause = useCallback(async () => {
-    try {
-      const r = await fetch('/api-posture/pause_toggle', { method: 'POST' });
-      if (!r.ok) throw new Error("Server responded with " + r.status);
-      const d = await r.json();
-      toast.success(d.paused ? "Paused" : "Resumed");
-    } catch (e: any) { 
-      toast.error("Pause fail: " + e.message);
-    }
-  }, []);
-
-  const resetAnalysis = useCallback(async () => {
-    try {
-      await fetch('/api-posture/reset', { method: 'POST' });
-      setResults(null);
-      setShowReport(false);
-      startPolling(); // resume polling for camera state
-    } catch (e) { }
-  }, [startPolling]);
-
-  // Dedicated unmount cleanup to avoid race conditions
   useEffect(() => {
     return () => { 
-      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-      // Ensure camera is released ONLY on unmount
       stopCamera();
     };
-  }, []);
+  }, [stopCamera]);
 
   // Keyboard shortcut listener for spacebar to toggle Pause
   useEffect(() => {
@@ -227,20 +148,20 @@ const PostureDetection = () => {
   // Auto-stop camera and exit fullscreen when all views are done
   useEffect(() => {
     if (allViewsDone && isActive) {
-      stopCamera();
+      handleStopCamera();
       toast.success("All views captured! Check your report below.", { duration: 4000 });
     }
-  }, [allViewsDone]);
+  }, [allViewsDone, isActive]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement && isFocusMode) {
-        stopCamera();
+        handleStopCamera();
       }
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  }, [isFocusMode, stopCamera]);
+  }, [isFocusMode, handleStopCamera]);
 
   return (
     <div className={`${isFocusMode ? "" : "space-y-6"} ${isFocusMode ? "fixed inset-0 z-[100] bg-[#0b1120] p-4 m-0 flex flex-col h-screen overflow-hidden" : ""}`}>
@@ -262,12 +183,12 @@ const PostureDetection = () => {
                     <Button
                       size="sm"
                       className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl active:scale-95 transition-all text-xs flex items-center gap-1.5 shadow-lg px-4 py-1.5"
-                      onClick={() => { stopCamera(); navigate('/dashboard/reports'); }}
+                      onClick={() => { handleStopCamera(); navigate('/dashboard/reports'); }}
                     >
                       <BarChart2 className="w-3.5 h-3.5" /> See Reports
                     </Button>
                   )}
-                  <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl active:scale-95 transition-all text-xs flex items-center gap-1.5 shadow-md px-3 py-1.5" onClick={stopCamera}>
+                  <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl active:scale-95 transition-all text-xs flex items-center gap-1.5 shadow-md px-3 py-1.5" onClick={handleStopCamera}>
                     <CameraOff className="w-3.5 h-3.5" /> Stop Detection
                   </Button>
                 </div>
@@ -315,9 +236,12 @@ const PostureDetection = () => {
                 </div>
               )}
 
-              {/* Video Stream --> Actually an Image stream */}
-              {isActive && videoUrl ? (
-                <img src={videoUrl} alt="webcam" className="w-full h-full object-cover" />
+              {/* Video Stream --> Replaced with Local Browser MediaPipe Canvas */}
+              {isActive ? (
+                <>
+                  <video ref={videoRef} className="hidden" playsInline muted autoPlay />
+                  <canvas ref={canvasRef} className="w-full h-full object-cover rounded-2xl" />
+                </>
               ) : (
                 <div className="hidden" />
               )}
@@ -329,7 +253,7 @@ const PostureDetection = () => {
                   </div>
                   <p className="text-white text-lg font-display font-bold">Posture AI Analysis</p>
                   <p className="text-white/60 text-xs mt-1 mb-4">Click Start to enable your camera for real-time analysis</p>
-                  <Button onClick={startCamera} size="lg" className="bg-accent-gradient hover:opacity-90 text-white shadow-glow rounded-2xl px-6 active:scale-95 transition-all text-sm font-bold flex items-center mx-auto">
+                  <Button onClick={handleStartCamera} size="lg" className="bg-accent-gradient hover:opacity-90 text-white shadow-glow rounded-2xl px-6 active:scale-95 transition-all text-sm font-bold flex items-center mx-auto">
                     <Camera className="w-4 h-4 mr-2" /> Start Detection
                   </Button>
                 </div>

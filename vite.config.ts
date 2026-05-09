@@ -13,16 +13,6 @@ export default defineConfig(({ mode }) => ({
     },
     allowedHosts: true,
     proxy: {
-      '/api-posture': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api-posture/, ''),
-      },
-      '/api-exercise': {
-        target: 'http://localhost:5001',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api-exercise/, ''),
-      },
       '/api': {
         target: 'http://localhost:4000',
         changeOrigin: true,

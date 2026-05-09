@@ -405,8 +405,11 @@ export default function ExerciseTracker() {
                   animate={{ opacity: 1 }}
                   className={`relative w-full h-full ${alarmActive ? "ring-inset ring-8 ring-red-500" : ""}`}
                 >
-                  {/* ✅ Canvas shows the mirrored video feed with pose overlay */}
-                  <canvas ref={canvasRef} className="w-full h-full object-cover" />
+                  {/* ✅ Canvas renders mirrored video feed with pose overlay */}
+                  <canvas
+                    ref={canvasRef}
+                    style={{ width: "100%", height: "100%", display: "block" }}
+                  />
 
                   {/* HUD Overlay Labels */}
                   <div className="absolute top-10 left-10 flex items-center gap-2 bg-black/40 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10">

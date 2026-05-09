@@ -70,7 +70,11 @@ export function useExerciseTracker() {
   }, [tracking]);
 
   const startCamera = useCallback(async () => {
-    if (!videoRef.current || !canvasRef.current || !landmarkerRef.current) return;
+    if (!videoRef.current || !canvasRef.current) return;
+    if (!landmarkerRef.current) {
+      alert("AI models are still downloading (about 5MB). Please wait 5-10 seconds and try again!");
+      return;
+    }
     
     setCameraOn(true);
     const canvasCtx = canvasRef.current.getContext("2d");

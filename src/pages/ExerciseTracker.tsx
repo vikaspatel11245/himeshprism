@@ -152,6 +152,7 @@ export default function ExerciseTracker() {
     updateUI(stats);
   }, [stats, tracking]);
     
+  useEffect(() => {
     // Global ESC key listener to end full screen
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && tracking) {

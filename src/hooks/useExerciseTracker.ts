@@ -77,6 +77,17 @@ export function useExerciseTracker() {
     }
     
     setCameraOn(true);
+
+    // Explicitly request camera permissions FIRST to force the browser prompt
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoRef.current.srcObject = stream;
+    } catch (err) {
+      alert("Camera access denied or unavailable. Please check your browser permissions.");
+      setCameraOn(false);
+      return;
+    }
+
     const canvasCtx = canvasRef.current.getContext("2d");
     const drawingUtils = new DrawingUtils(canvasCtx!);
 

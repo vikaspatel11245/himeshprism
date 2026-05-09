@@ -38,7 +38,7 @@ export default function PhysioPlayer(){
 
     const loader = new GLTFLoader()
 
-    loader.load("/physio_trainer.glb/stretch.glb",(gltf)=>{
+    loader.load("/meshcharacters/stretch.glb",(gltf)=>{
 
       const model = gltf.scene
       scene.add(model)

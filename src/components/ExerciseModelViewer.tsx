@@ -216,5 +216,5 @@ export default function ExerciseModelViewer({ actionName, onActionChange, models
 }
 
 // Preload to useGLTF cash buffer
-useGLTF.preload("/physio_trainer.glb/plank.glb");
+useGLTF.preload("/meshcharacters/plank.glb");
 export { ExerciseModelViewer };

@@ -6,6 +6,7 @@ import { Search, Plus, Filter, ArrowRight, X, Activity, User, Save, BellRing, Us
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { apiUrl } from "@/lib/api";
 
 // Exercise library (static - these are the available physiotherapy exercises)
 const exerciseLibrary = [
@@ -31,7 +32,7 @@ const PrescriptionBuilder = () => {
       try {
         const doctorId = user?.user_id; // Using user_id for doctor_patients mapping
         if (!doctorId) return;
-        const r = await fetch(`/api/doctor-patients?doctorId=${doctorId}`);
+        const r = await fetch(apiUrl(`/api/doctor-patients?doctorId=${doctorId}`));
         const d = await r.json();
         if (d.success) setRealPatients((d.patients || []).map((p: any) => p.name).filter(Boolean));
       } catch (e) { /* silently fail */ }

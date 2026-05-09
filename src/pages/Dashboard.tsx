@@ -29,6 +29,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 import { toast } from 'sonner';
+import { apiUrl } from "@/lib/api";
 
 const emptyWeeklyData = [
   { day: "Mon", reps: 0, calories: 0 },
@@ -84,7 +85,7 @@ const Dashboard = () => {
 
         // 1. Posture Logs
         if (user.patient_id) {
-          const pRes = await fetch(`/api/posture-history?patientId=${user.patient_id}`);
+          const pRes = await fetch(apiUrl(`/api/posture-history?patientId=${user.patient_id}`));
           const pData = await pRes.json();
           if (pData.success) {
             pData.sessions.slice(0, 5).forEach((s: any) => {
@@ -100,7 +101,7 @@ const Dashboard = () => {
         }
 
         // 2. Exercise Logs (Metric updates)
-        const eRes = await fetch(`/api/exercise-history?userId=${user.user_id}`);
+        const eRes = await fetch(apiUrl(`/api/exercise-history?userId=${user.user_id}`));
         const eData = await eRes.json();
         if (eData.success) {
           // Group by timestamp to show sessions

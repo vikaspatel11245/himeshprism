@@ -9,6 +9,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
+import { apiUrl } from "@/lib/api";
 
 const Reports = () => {
   const { user } = useAuth();
@@ -35,7 +36,7 @@ const Reports = () => {
 
         // 1. Fetch Posture History
         if (patientId) {
-          const pRes = await fetch(`/api/posture-history?patientId=${patientId}`);
+          const pRes = await fetch(apiUrl(`/api/posture-history?patientId=${patientId}`));
           const pData = await pRes.json();
           if (pData.success) {
             setPostureHistory(pData.sessions || []);
@@ -44,7 +45,7 @@ const Reports = () => {
 
         // 2. Fetch Exercise History
         if (userId) {
-          const eRes = await fetch(`/api/exercise-history?userId=${userId}`);
+          const eRes = await fetch(apiUrl(`/api/exercise-history?userId=${userId}`));
           const eData = await eRes.json();
           if (eData.success) {
             setExerciseMetrics(eData.metrics || []);

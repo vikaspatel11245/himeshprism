@@ -94,7 +94,7 @@ app.post("/api/chats", async (req, res) => {
             console.log("🤖 [AI] Sending request to Groq for language:", targetLanguage);
             try {
                 const resp = await groq.chat.completions.create({
-                    model: "llama-3.1-70b-versatile",
+                    model: "llama-3.3-70b-versatile",
                     max_tokens: 1024,
                     messages: [
                         {
